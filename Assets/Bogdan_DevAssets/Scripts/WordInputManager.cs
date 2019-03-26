@@ -22,27 +22,35 @@ public class WordInputManager : MonoBehaviour
     [SerializeField]
     private Text defineWordLabel;
 
-    [Header("Refrence rect transforms")]
     [SerializeField]
-    private RectTransform defPanelOpenRect;
-    [SerializeField]
-    private RectTransform defPanelClosedRect;
-    [SerializeField]
-    private RectTransform inputPopupOpenRect;
-    [SerializeField]
-    private RectTransform inputPopupClosedRect;
+    private WordsPanelManager wordsPanelManager;
 
     private bool isOpen = false;
     private bool editing = false;
 
-    private const float SLIDE_TIME = 0.25f;
-    private const int MIN_DEF_CHARACTERS = 6;
-    private const string NO_WORD = "Word not found.\nAdd a description to define the word.";
-    private const string DEF_CHANGE = "Definition has been changed.\nTo save changes click Update Definition";
-    private const string DEFINE_WORD = "Define new word";
-    private const string UPDATE_DEF = "Update word Definition";
+    #region Refrence rectTransforms
+        [Header("Refrence rect transforms")]
+        [SerializeField]
+        private RectTransform defPanelOpenRect;
+        [SerializeField]
+        private RectTransform defPanelClosedRect;
+        [SerializeField]
+        private RectTransform inputPopupOpenRect;
+        [SerializeField]
+        private RectTransform inputPopupClosedRect;
+    #endregion
+
+    #region Constants
+        private const float SLIDE_TIME = 0.25f;
+        private const int MIN_DEF_CHARACTERS = 6;
+        private const string NO_WORD = "Word not found.\nAdd a description to define the word.";
+        private const string DEF_CHANGE = "Definition has been changed.\nTo save changes click Update Definition";
+        private const string DEFINE_WORD = "Define new word";
+        private const string UPDATE_DEF = "Update word Definition";
+    #endregion
 
 
+    //Opens the input popup panel and sets the apropriate ui ellements
     public void TriggerInputPopup(bool isEditDefinition)
     {
         if(!isOpen)
@@ -56,6 +64,7 @@ public class WordInputManager : MonoBehaviour
         }
     }
 
+    //Closes the input popup panel and applies changes if the commitChanges parameter is true
     public void DismissInputPopup(bool commitChanges)
     {
         if(isOpen)
@@ -64,28 +73,29 @@ public class WordInputManager : MonoBehaviour
             StartCoroutine(OpenPopup());
             if(commitChanges)
             {
-                DictionaryDatabaseManager.AddWord((editing) ? WordsPanelManager.ActiveWord : wordInput.text, defInput.text);
+                DatabaseManager.AddWord((editing) ? WordsPanelManager.ActiveWord : wordInput.text, defInput.text);
+                wordsPanelManager.UpdateWords(true);
             }
             editing = false;
         }
     }
 
-    //Triggered on change of definition input
+    //Triggered on change of definition input string
     public void CheckDefinition()
     {
         if(!isOpen)
         {
-            if(WordsPanelManager.ActiveWord != null && defInput.text != DictionaryDatabaseManager.ActiveDatabase[WordsPanelManager.ActiveWord])
+            if(WordsPanelManager.ActiveWord != null && defInput.text != DatabaseManager.ActiveDatabase[WordsPanelManager.ActiveWord])
             {
                 TriggerInputPopup(true);
             }
         }
 
-        if(isOpen)
+        else if(isOpen)
         {
             defineWordButton.interactable = defInput.text.Length >= MIN_DEF_CHARACTERS;
 
-            if(WordsPanelManager.ActiveWord != null && defInput.text == DictionaryDatabaseManager.ActiveDatabase[WordsPanelManager.ActiveWord])
+            if(WordsPanelManager.ActiveWord != null && defInput.text == DatabaseManager.ActiveDatabase[WordsPanelManager.ActiveWord])
             {
                 DismissInputPopup(false);
             }

@@ -43,7 +43,7 @@ public class WordsPanelManager : MonoBehaviour
     {
         results = new List<string>();
         activeWordObjects = new Dictionary<string, WordObject>();
-        UpdateWords();
+        UpdateWords(false);
 
         selectionMarkerHolder = selectionMarker.parent;
         selectionMarker.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, wordsRect.rect.width);
@@ -58,10 +58,22 @@ public class WordsPanelManager : MonoBehaviour
         SortWords();
     }
 
-    public void AddWordAction()
+    //Updates the word list to match the saved word database
+    public void UpdateWords(bool newWordInput)
     {
-        DictionaryDatabaseManager.AddWord(wordInput.text, definitionInput.text);
-        UpdateWords();
+        SizeWordsRect((newWordInput) ? 1 : DatabaseManager.ActiveDatabase.Count);
+
+        foreach (string key in DatabaseManager.ActiveDatabase.Keys)
+        {
+            if(!activeWordObjects.ContainsKey(key))
+            {
+                //We create and initialize word objects with onLefClick action to display the definition and onRightClick to remove that wordObject along with its asociated database key
+                WordObject wordObjectCache = Instantiate(wordPrefab, wordsRect).GetComponent<WordObject>();
+                wordObjectCache.name = key;
+                wordObjectCache.Initialize(() => ToggleDescription(key, wordObjectCache.transform), () => RemoveWord(key));
+                activeWordObjects.Add(key, wordObjectCache);
+            }
+        }
     }
 
     //triggered onValueChanged of word input
@@ -78,7 +90,7 @@ public class WordsPanelManager : MonoBehaviour
             }
 
             //Find matching words
-            foreach (string key in DictionaryDatabaseManager.ActiveDatabase.Keys)
+            foreach (string key in DatabaseManager.ActiveDatabase.Keys)
             {
                 if(StringCompare(key, wordInput.text))
                 {
@@ -95,9 +107,9 @@ public class WordsPanelManager : MonoBehaviour
             //Resize the container rect
             SizeWordsRect(results.Count);
         }
-        else if (results.Count != DictionaryDatabaseManager.ActiveDatabase.Count)
+        else if (results.Count != DatabaseManager.ActiveDatabase.Count)
         {
-            results = DictionaryDatabaseManager.ActiveDatabase.Keys.ToList();
+            results = DatabaseManager.ActiveDatabase.Keys.ToList();
 
             foreach (string word in results)
             {
@@ -140,7 +152,7 @@ public class WordsPanelManager : MonoBehaviour
         if (ActiveWord != word)
         {
             ActiveWord = word;
-            definitionInput.text = DictionaryDatabaseManager.GetDefinition(word);
+            definitionInput.text = DatabaseManager.ActiveDatabase[word];
             selectionMarker.SetParent(parent);
             selectionMarker.localPosition = Vector3.zero;
             selectionMarker.SetAsFirstSibling();
@@ -152,26 +164,9 @@ public class WordsPanelManager : MonoBehaviour
         }
     }
 
-    //Updates the word list to match the saved word database
-    private void UpdateWords()
-    {
-        SizeWordsRect(DictionaryDatabaseManager.ActiveDatabase.Count);
-
-        foreach (string key in DictionaryDatabaseManager.ActiveDatabase.Keys)
-        {
-            if(!activeWordObjects.ContainsKey(key))
-            {
-                WordObject wordObjectCache = Instantiate(wordPrefab, wordsRect).GetComponent<WordObject>();
-                wordObjectCache.name = key;
-                wordObjectCache.Initialize(() => ToggleDescription(key, wordObjectCache.transform), () => RemoveWord(key));
-                activeWordObjects.Add(key, wordObjectCache);
-            }
-        }
-    }
-
     private void RemoveWord(string key)
     {
-        if(DictionaryDatabaseManager.RemoveWord(key))
+        if(DatabaseManager.RemoveWord(key))
         {
             selectionMarker.SetParent(selectionMarkerHolder);
             Destroy(activeWordObjects[key].gameObject);
@@ -187,11 +182,19 @@ public class WordsPanelManager : MonoBehaviour
         wordsRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, itemCount * singleWordHeight);
     }
 
-    //Makes both strings uppercase in order to ignore case sensitivity, returns true if string s1 contains string s2
+    //Makes both strings uppercase in order to ignore case sensitivity, returns true if string s1 contains string s2 (Edit: now checks character order as well)
     private bool StringCompare(string s1, string s2)
     {
         if(s1.ToUpper().Contains(s2.ToUpper()))
         {
+            for (int i = 0; i < s2.Length; i++)
+            {
+                if(s1.ToUpper()[i] != s2.ToUpper()[i])
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
