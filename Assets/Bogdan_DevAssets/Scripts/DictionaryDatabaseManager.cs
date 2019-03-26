@@ -7,6 +7,7 @@ public class DictionaryDatabaseManager : MonoBehaviour
 
     private static string path;
 	private const string filename = "/wordsDatabase.json";
+    private const string NO_VALUE_ERROR = "Description not found";
 
     private void Awake()
     {
@@ -27,15 +28,18 @@ public class DictionaryDatabaseManager : MonoBehaviour
         SaveDatabase();
     }
 
-    public static void RemoveWord(string word)
+    public static bool RemoveWord(string word)
     {
         if(ActiveDatabase.ContainsKey(word))
         {
             ActiveDatabase.Remove(word);
+            SaveDatabase();
+            return true;
         }
         else
         {
             Debug.Log("Trying to remove a word that does not exist");
+            return false;
         }
     }
 
@@ -49,7 +53,15 @@ public class DictionaryDatabaseManager : MonoBehaviour
         return WordExistsInDatabase(word) && !ActiveDatabase[word].Equals(string.Empty);
     }
 
+    public static string GetDefinition(string wordKey)
+    {
+        if(DictionaryDatabaseManager.ActiveDatabase.TryGetValue(wordKey, out string result))
+        {
+            return result;
+        }
 
+        return NO_VALUE_ERROR;
+    }
 
     public static void SaveDatabase()
     {

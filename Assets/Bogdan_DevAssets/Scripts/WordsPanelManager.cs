@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WordsPanelManager : MonoBehaviour
 {
+    public static string ActiveWord {get; private set;}
+
+    [SerializeField]
+    private WordInputManager wordInputManager;
+
     [SerializeField]
     private RectTransform referenceRect;
     [SerializeField]
@@ -18,50 +24,177 @@ public class WordsPanelManager : MonoBehaviour
     [SerializeField]
     private InputField definitionInput;
 
+    [SerializeField]
+    private RectTransform selectionMarker;
+
     private Dictionary<string, WordObject> activeWordObjects;
+    private List<string> results;
+    private Transform selectionMarkerHolder;
     private float singleWordHeight;
 
+    private bool isSortAscending = true;
+
+    private const string SORT_ASCENDING = "A ► Z";
+    private const string SORT_DESCENDING = "Z ► A";
+    private const string SORT_HEADER = "Sorting:\n";
     private const int WORDS_PER_HEIGHT = 12;
 
     private void Start()
     {
+        results = new List<string>();
         activeWordObjects = new Dictionary<string, WordObject>();
-        SizeWordsRect();
         UpdateWords();
+
+        selectionMarkerHolder = selectionMarker.parent;
+        selectionMarker.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, wordsRect.rect.width);
+        selectionMarker.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, singleWordHeight);
     }
 
     public void SortButtonAction()
     {
-        /*  Case based (check on word frield change)
-                if word or part of word Exitsts || input field is empty > toggle sort type and sort
+        isSortAscending = !isSortAscending;
+        sortText.text = SORT_HEADER + ((isSortAscending) ? SORT_ASCENDING : SORT_DESCENDING);
 
-                else "+" (add word)
-                    while description input field is null maker red; check on decription field change
-         */
-
-         DictionaryDatabaseManager.AddWord(wordInput.text, definitionInput.text);
+        SortWords();
     }
 
+    public void AddWordAction()
+    {
+        DictionaryDatabaseManager.AddWord(wordInput.text, definitionInput.text);
+        UpdateWords();
+    }
+
+    //triggered onValueChanged of word input
+    public void FilterSearch()
+    {
+        if(wordInput.text.Length > 0)
+        {
+            results = new List<string>();
+
+            //Disable all word objects
+            foreach (WordObject wordObj in activeWordObjects.Values)
+            {
+                wordObj.gameObject.SetActive(false);
+            }
+
+            //Find matching words
+            foreach (string key in DictionaryDatabaseManager.ActiveDatabase.Keys)
+            {
+                if(StringCompare(key, wordInput.text))
+                {
+                    results.Add(key);
+                }
+            }
+
+            //Reactivate matching words
+            foreach (string word in results)
+            {
+                activeWordObjects[word].gameObject.SetActive(true);
+            }
+
+            //Resize the container rect
+            SizeWordsRect(results.Count);
+        }
+        else if (results.Count != DictionaryDatabaseManager.ActiveDatabase.Count)
+        {
+            results = DictionaryDatabaseManager.ActiveDatabase.Keys.ToList();
+
+            foreach (string word in results)
+            {
+                activeWordObjects[word].gameObject.SetActive(true);
+            }
+
+            SizeWordsRect(results.Count);
+
+        }
+
+        //if no word are found matching the search string we trigger the word input popup pannel and move the selection marker off canvas
+        if(results.Count.Equals(0))
+        {
+            wordInputManager.TriggerInputPopup(false);
+            selectionMarker.SetParent(selectionMarkerHolder);
+            definitionInput.text = string.Empty;
+        }
+        else
+        {
+            wordInputManager.DismissInputPopup(false);
+        }
+    }
+
+    //Sorts the wordObjects and then updates their child index, the vertical layout manager then displays the gameobjects in the corect order
+    private void SortWords()
+    {
+        List<WordObject> sortedChildren = (isSortAscending) ?
+            activeWordObjects.Values.OrderBy(a => a.name).ToList() :
+            activeWordObjects.Values.OrderByDescending(a => a.name).ToList();
+
+        for (int i = 0; i < sortedChildren.Count; i++)
+        {
+            sortedChildren[i].transform.SetSiblingIndex(i);
+        }
+    }
+
+    //Toggles the description in the description input field
+    private void ToggleDescription(string word, Transform parent)
+    {
+        if (ActiveWord != word)
+        {
+            ActiveWord = word;
+            definitionInput.text = DictionaryDatabaseManager.GetDefinition(word);
+            selectionMarker.SetParent(parent);
+            selectionMarker.localPosition = Vector3.zero;
+            selectionMarker.SetAsFirstSibling();
+        }
+        else
+        {
+            definitionInput.text = string.Empty;
+            selectionMarker.SetParent(selectionMarkerHolder);
+        }
+    }
+
+    //Updates the word list to match the saved word database
     private void UpdateWords()
     {
-        Debug.Log("Updating words");
-        Debug.Log(DictionaryDatabaseManager.ActiveDatabase.Count);
+        SizeWordsRect(DictionaryDatabaseManager.ActiveDatabase.Count);
+
         foreach (string key in DictionaryDatabaseManager.ActiveDatabase.Keys)
         {
-            Debug.Log(key);
             if(!activeWordObjects.ContainsKey(key))
             {
                 WordObject wordObjectCache = Instantiate(wordPrefab, wordsRect).GetComponent<WordObject>();
                 wordObjectCache.name = key;
-                wordObjectCache.Initialize();
+                wordObjectCache.Initialize(() => ToggleDescription(key, wordObjectCache.transform), () => RemoveWord(key));
                 activeWordObjects.Add(key, wordObjectCache);
             }
         }
     }
 
-    private void SizeWordsRect()
+    private void RemoveWord(string key)
+    {
+        if(DictionaryDatabaseManager.RemoveWord(key))
+        {
+            selectionMarker.SetParent(selectionMarkerHolder);
+            Destroy(activeWordObjects[key].gameObject);
+            activeWordObjects.Remove(key);
+            FilterSearch();
+        }
+    }
+
+    //Resizes the word rect transform to corect size based on the itemCount parameter
+    private void SizeWordsRect(int itemCount)
     {
         singleWordHeight = referenceRect.rect.height / WORDS_PER_HEIGHT;
-        wordsRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, DictionaryDatabaseManager.ActiveDatabase.Count * singleWordHeight);
+        wordsRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, itemCount * singleWordHeight);
+    }
+
+    //Makes both strings uppercase in order to ignore case sensitivity, returns true if string s1 contains string s2
+    private bool StringCompare(string s1, string s2)
+    {
+        if(s1.ToUpper().Contains(s2.ToUpper()))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
