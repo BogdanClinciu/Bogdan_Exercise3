@@ -24,7 +24,7 @@ namespace SaveDataTypes
 
             foreach (KeyValuePair<string,string> kvp in dictionary)
             {
-                wordsData.Add(new SaveElement(kvp.Key, kvp.Value));
+                wordsData.Add(new SaveElement(kvp.Key.ToLower(), kvp.Value));
             }
         }
 
@@ -37,7 +37,7 @@ namespace SaveDataTypes
 
             foreach(SaveElement element in wordsData)
             {
-                returnDict.Add(element.word, element.desc);
+                returnDict.Add(element.word.ToLower(), element.desc);
             }
 
             return returnDict;

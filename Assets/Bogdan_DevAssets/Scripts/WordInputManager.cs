@@ -41,7 +41,7 @@ public class WordInputManager : MonoBehaviour
     #endregion
 
     #region Constants
-        private const float SLIDE_TIME = 0.25f;
+        private const float SLIDE_TIME = 0.15f;
         private const int MIN_DEF_CHARACTERS = 6;
         private const string NO_WORD = "Word not found.\nAdd a description to define the word.";
         private const string DEF_CHANGE = "Definition has been changed.\nTo save changes click Update Definition";

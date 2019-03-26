@@ -23,6 +23,8 @@ public class WordsPanelManager : MonoBehaviour
     private InputField wordInput;
     [SerializeField]
     private InputField definitionInput;
+    [SerializeField]
+    private Text definitionInputTitle;
 
     [SerializeField]
     private RectTransform selectionMarker;
@@ -37,6 +39,7 @@ public class WordsPanelManager : MonoBehaviour
     private const string SORT_ASCENDING = "A ► Z";
     private const string SORT_DESCENDING = "Z ► A";
     private const string SORT_HEADER = "Sorting:\n";
+    private const string NO_WORD = "No word selected.";
     private const int WORDS_PER_HEIGHT = 12;
 
     private void Start()
@@ -117,11 +120,10 @@ public class WordsPanelManager : MonoBehaviour
             }
 
             SizeWordsRect(results.Count);
-
         }
 
         //if no word are found matching the search string we trigger the word input popup pannel and move the selection marker off canvas
-        if(results.Count.Equals(0))
+        if(wordInput.text.Length > 1 && !DatabaseManager.ActiveDatabase.ContainsKey(wordInput.text.ToLower()))
         {
             wordInputManager.TriggerInputPopup(false);
             selectionMarker.SetParent(selectionMarkerHolder);
@@ -152,6 +154,7 @@ public class WordsPanelManager : MonoBehaviour
         if (ActiveWord != word)
         {
             ActiveWord = word;
+            definitionInputTitle.text = word.ToUpper();
             definitionInput.text = DatabaseManager.ActiveDatabase[word];
             selectionMarker.SetParent(parent);
             selectionMarker.localPosition = Vector3.zero;
@@ -159,8 +162,11 @@ public class WordsPanelManager : MonoBehaviour
         }
         else
         {
+            ActiveWord = null;
+            definitionInputTitle.text = NO_WORD;
             definitionInput.text = string.Empty;
             selectionMarker.SetParent(selectionMarkerHolder);
+            wordInputManager.DismissInputPopup(false);
         }
     }
 

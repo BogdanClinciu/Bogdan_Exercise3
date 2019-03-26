@@ -53,19 +53,11 @@ public class DatabaseManager : MonoBehaviour
     }
 
     ///<summary>
-    ///Returns true if <paramref name="wordKey"/> exists within the dictionary database.
-    ///</summary>
-    public static bool WordExistsInDatabase(string wordKey)
-    {
-        return ActiveDatabase.ContainsKey(wordKey);
-    }
-
-    ///<summary>
     ///Returns true if <paramref name="wordKey"/> definition is not empty within the dictionary database, and if <paramref name="wordKey"/> exists.
     ///</summary>
     public static bool WordHasDefinition(string wordKey)
     {
-        return WordExistsInDatabase(wordKey) && !ActiveDatabase[wordKey].Equals(string.Empty);
+        return ActiveDatabase.ContainsKey(wordKey) && !ActiveDatabase[wordKey].Equals(string.Empty);
     }
 
     ///<summary>
@@ -90,7 +82,7 @@ public class DatabaseManager : MonoBehaviour
             {
 				SaveData data = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(path));
                 ActiveDatabase = data.ToDictionary();
-                Debug.Log("Active database loaded");
+                //Debug.Log("Active database loaded");
 			}
             else
             {
