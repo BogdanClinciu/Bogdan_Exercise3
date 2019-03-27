@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +8,7 @@ public class WordInputManager : MonoBehaviour
     [SerializeField]
     private InputField wordInput;
     [SerializeField]
-    private InputField defInput;
+    private TMP_InputField defInput;
 
     [SerializeField]
     private RectTransform defPanelRect;
@@ -73,7 +73,7 @@ public class WordInputManager : MonoBehaviour
             StartCoroutine(OpenPopup());
             if(commitChanges)
             {
-                DatabaseManager.AddWord((editing) ? WordsPanelManager.ActiveWord : wordInput.text, defInput.text);
+                DatabaseManager.AddWord((editing) ? WordsPanelManager.ActiveWord : wordInput.text, defInput.textComponent.GetParsedText());
                 wordsPanelManager.UpdateWords(true);
             }
             editing = false;

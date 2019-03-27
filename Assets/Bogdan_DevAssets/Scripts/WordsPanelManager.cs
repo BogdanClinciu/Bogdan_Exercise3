@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using TMPro;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,7 @@ public class WordsPanelManager : MonoBehaviour
     [SerializeField]
     private InputField wordInput;
     [SerializeField]
-    private InputField definitionInput;
+    private TMP_InputField definitionInput;
     [SerializeField]
     private Text definitionInputTitle;
 
@@ -174,6 +175,12 @@ public class WordsPanelManager : MonoBehaviour
     {
         if(DatabaseManager.RemoveWord(key))
         {
+            if(ActiveWord != null)
+            {
+                wordInputManager.DismissInputPopup(false);
+            }
+
+            ActiveWord = null;
             selectionMarker.SetParent(selectionMarkerHolder);
             Destroy(activeWordObjects[key].gameObject);
             activeWordObjects.Remove(key);
