@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -108,7 +106,8 @@ public class UI_Manager : MonoBehaviour
         SetActiveWord(null);
     }
 
-    //
+
+    //Determines if the save button can be pressed and sets interactability (triggered from the editWordInputField's on value changed)
     public void CheckIfCanSave()
     {
         if(editWordInput.text.Length > 0)
@@ -131,15 +130,14 @@ public class UI_Manager : MonoBehaviour
     }
 
 
-    //Updates the definiton ui
+    //Updates the definiton ui panel (triggered every time the ActiveWord changes )
     private void UpdateDefinitionUI()
     {
         if(ActiveWordObject != null)
         {
-            // also do check for unadded words
             definitionText.text = DatabaseManager.ActiveDatabase[ActiveWordObject.word];
             definitionWordTitle.text = ActiveWordObject.word.ToUpper();
-            unknownWordManager.CreateDefinitionLinks(definitionText);
+            unknownWordManager.CreateTextMarkup(definitionText);
         }
         else
         {

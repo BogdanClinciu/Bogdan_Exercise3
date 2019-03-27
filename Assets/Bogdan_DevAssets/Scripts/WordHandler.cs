@@ -38,11 +38,11 @@ public class WordHandler : MonoBehaviour
         uI_Manager = GetComponent<UI_Manager>();
         activeWordObjects = new Dictionary<string, WordObject>();
 
-        //results = DatabaseManager.ActiveDatabase.Keys.ToList();
+        //we poulate the word list at start with the entire database
         UpdateWordPanel();
     }
 
-    #region ButtonActions
+    #region Button Actions
 
         public void Sort()
         {

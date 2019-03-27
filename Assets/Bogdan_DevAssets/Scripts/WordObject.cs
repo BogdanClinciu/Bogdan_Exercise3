@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
@@ -11,6 +10,7 @@ public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
 
     private bool isDown = false;
 
+    //we call SetWord when instantiating thw word object.
     public void SetWord(string _word)
     {
         word = _word;
