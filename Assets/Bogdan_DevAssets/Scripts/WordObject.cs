@@ -5,19 +5,16 @@ using UnityEngine.UI;
 
 public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
 {
+    public string word {get; private set;} = string.Empty;
     [SerializeField]
     private Text wordText;
 
-
-    private UnityAction leftClickAction;
-    private UnityAction rightClickAction;
     private bool isDown = false;
 
-    public void Initialize(UnityAction onLeftClick, UnityAction onRightClick)
+    public void SetWord(string _word)
     {
-        leftClickAction = onLeftClick;
-        rightClickAction = onRightClick;
-        wordText.text = name;
+        word = _word;
+        wordText.text = word;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -32,11 +29,7 @@ public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
             isDown = false;
             if(eventData.pointerId.Equals(-1))
             {
-                leftClickAction.Invoke();
-            }
-            else if (eventData.pointerId.Equals(-2))
-            {
-                rightClickAction.Invoke();
+                UI_Manager.SetActiveWord(this);
             }
         }
     }

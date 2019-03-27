@@ -4,17 +4,10 @@ using System.Collections;
 
 public class UnknownWordManager : MonoBehaviour
 {
-    [SerializeField]
-    private bool disableRun;
-    [SerializeField]
-    private TMP_Text definitionsText;
-    [SerializeField]
-    private TMP_InputField definitionsInput;
-
     private TMP_TextInfo textInfo;
     private TMP_WordInfo wordInfo;
 
-    private const string LINK_BEGIN = "<link=\"ID_"; //insert ID (int) here
+    private const string LINK_BEGIN = "<link=\""; //insert ID (int) here
     private const string LINK_CLOSE = "\">";
     private const string LINK_END = "</link>";
 
@@ -23,22 +16,16 @@ public class UnknownWordManager : MonoBehaviour
 
     private const string SPACE = " ";
 
-
-
-    public void CreateDefinitionLinks()
+    public void CreateDefinitionLinks(TMP_Text definitionsText)
     {
-        if(definitionsInput.text.Contains(LINK_END) || disableRun)
-        {
-            return;
-        }
-        StopAllCoroutines();
-        StartCoroutine(LoopText());
+        StartCoroutine(Timer(definitionsText));
     }
 
-    private IEnumerator LoopText()
+    private IEnumerator Timer(TMP_Text definitionsText)
     {
-        yield return new WaitForSeconds(1);
+        yield return null;
         string linkedText = string.Empty;
+
         if(definitionsText.text.Length > 0)
         {
             textInfo = definitionsText.textInfo;
@@ -48,9 +35,7 @@ public class UnknownWordManager : MonoBehaviour
 
                 if(wordInfo.GetWord().Length > 2 && !DatabaseManager.ActiveDatabase.ContainsKey(wordInfo.GetWord().ToLower()))
                 {
-                    //Debug.Log(wordInfo.GetWord());
-
-                    linkedText += LINK_BEGIN + i.ToString("#00") + LINK_CLOSE + COLOR_BEGIN +
+                    linkedText += LINK_BEGIN + wordInfo.GetWord() + LINK_CLOSE + COLOR_BEGIN +
                         wordInfo.GetWord() + COLOR_END + LINK_END + SPACE;
                 }
                 else
@@ -58,11 +43,7 @@ public class UnknownWordManager : MonoBehaviour
                     linkedText += wordInfo.GetWord() + SPACE;
                 }
             }
-
-            definitionsInput.text = linkedText;
+            definitionsText.text = linkedText;
         }
     }
-
-    //See the <link="ID_01"><u><#40A0FF>online documentation</color></u></link>
-    //for more information <u><link="ID_02">about this product</link></u> \U0001F60A
 }
