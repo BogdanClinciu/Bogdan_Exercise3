@@ -1,18 +1,18 @@
 # Bogdan_Exercise3
 Exercise requirement:
 Using dictionaries, build an English dictionary application with the following capabilities:
-·         Allow the user to search for a word and show the definition after the word is selected
-·         Allow the user to add a new word with a definition
-·         Allow the user to remove a word and definition
-·         Allow the user to edit a words definition
-·         Show all words A-Z
-·         Show all words Z-A
-·         Data and changes should be persistent
+- Allow the user to search for a word and show the definition after the word is selected
+- Allow the user to add a new word with a definition
+- Allow the user to remove a word and definition
+- Allow the user to edit a words definition
+- Show all words A-Z
+- Show all words Z-A
+- Data and changes should be persistent
  
 Feel free to design the UI as you see fit.
 
-Extra: valid words appear as the user types (auto complete feature)
-Extra 2: FAST ACCESS : When you click/select a word that’s in the dictionary, a small popup should appear with its definition. If the word is not present in the dictionary, the popup should allow you to add a definition for it.
+- Extra: valid words appear as the user types (auto complete feature)
+- Extra 2: FAST ACCESS : When you click/select a word that’s in the dictionary, a small popup should appear with its definition. If the word is not present in the dictionary, the popup should allow you to add a definition for it.
 
 
 Implementation:
