@@ -28,12 +28,12 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private int lastIndex = -1;
 
     private Matrix4x4 matrix;
-    private TMP_MeshInfo[] m_cachedMeshInfoVertexData;
+    private TMP_MeshInfo[] cachedMeshInfoVertexData;
 
     private static PopupHandler popupHandler;
 
 
-    void Awake()
+    private void Awake()
     {
         popupHandler = popupHandlerRefrence;
         textMeshPro = gameObject.GetComponent<TextMeshProUGUI>();
@@ -169,18 +169,10 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
     }
 
-    //Change the curent word link and toggle the popup group if not empty
-    public static void TogglePopupCurentLink(string word)
-    {
-        CurentLink = word;
-        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
-    }
-
     public void OnPointerEnter(PointerEventData eventData)
     {
         isHoveringObject = true;
     }
-
 
     public void OnPointerExit(PointerEventData eventData)
     {
@@ -189,6 +181,13 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
             CurentLink = string.Empty;
         }
+    }
+
+    //Change the curent word link and toggle the popup group if not empty
+    public static void TogglePopupCurentLink(string word)
+    {
+        CurentLink = word;
+        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
     }
 
     private void RestoreCachedVertexAttributes(int index)
@@ -203,7 +202,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         // Restore Vertices
         // Get a reference to the cached / original vertices.
-        Vector3[] src_vertices = m_cachedMeshInfoVertexData[materialIndex].vertices;
+        Vector3[] src_vertices = cachedMeshInfoVertexData[materialIndex].vertices;
 
         // Get a reference to the vertices that we need to replace.
         Vector3[] dst_vertices = textMeshPro.textInfo.meshInfo[materialIndex].vertices;
@@ -219,7 +218,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         Color32[] dst_colors = textMeshPro.textInfo.meshInfo[materialIndex].colors32;
 
         // Get a reference to the cached / original vertex colors.
-        Color32[] src_colors = m_cachedMeshInfoVertexData[materialIndex].colors32;
+        Color32[] src_colors = cachedMeshInfoVertexData[materialIndex].colors32;
 
         // Copy the vertex colors from source to destination.
         dst_colors[vertexIndex + 0] = src_colors[vertexIndex + 0];
@@ -229,7 +228,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         // Restore UV0S
         // UVS0
-        Vector2[] src_uv0s = m_cachedMeshInfoVertexData[materialIndex].uvs0;
+        Vector2[] src_uv0s = cachedMeshInfoVertexData[materialIndex].uvs0;
         Vector2[] dst_uv0s = textMeshPro.textInfo.meshInfo[materialIndex].uvs0;
         dst_uv0s[vertexIndex + 0] = src_uv0s[vertexIndex + 0];
         dst_uv0s[vertexIndex + 1] = src_uv0s[vertexIndex + 1];
@@ -237,7 +236,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         dst_uv0s[vertexIndex + 3] = src_uv0s[vertexIndex + 3];
 
         // UVS2
-        Vector2[] src_uv2s = m_cachedMeshInfoVertexData[materialIndex].uvs2;
+        Vector2[] src_uv2s = cachedMeshInfoVertexData[materialIndex].uvs2;
         Vector2[] dst_uv2s = textMeshPro.textInfo.meshInfo[materialIndex].uvs2;
         dst_uv2s[vertexIndex + 0] = src_uv2s[vertexIndex + 0];
         dst_uv2s[vertexIndex + 1] = src_uv2s[vertexIndex + 1];
@@ -255,7 +254,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         dst_vertices[lastIndex + 3] = src_vertices[lastIndex + 3];
 
         // Vertex Colors
-        src_colors = m_cachedMeshInfoVertexData[materialIndex].colors32;
+        src_colors = cachedMeshInfoVertexData[materialIndex].colors32;
         dst_colors = textMeshPro.textInfo.meshInfo[materialIndex].colors32;
         dst_colors[lastIndex + 0] = src_colors[lastIndex + 0];
         dst_colors[lastIndex + 1] = src_colors[lastIndex + 1];
@@ -263,7 +262,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         dst_colors[lastIndex + 3] = src_colors[lastIndex + 3];
 
         // UVS0
-        src_uv0s = m_cachedMeshInfoVertexData[materialIndex].uvs0;
+        src_uv0s = cachedMeshInfoVertexData[materialIndex].uvs0;
         dst_uv0s = textMeshPro.textInfo.meshInfo[materialIndex].uvs0;
         dst_uv0s[lastIndex + 0] = src_uv0s[lastIndex + 0];
         dst_uv0s[lastIndex + 1] = src_uv0s[lastIndex + 1];
@@ -271,7 +270,7 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         dst_uv0s[lastIndex + 3] = src_uv0s[lastIndex + 3];
 
         // UVS2
-        src_uv2s = m_cachedMeshInfoVertexData[materialIndex].uvs2;
+        src_uv2s = cachedMeshInfoVertexData[materialIndex].uvs2;
         dst_uv2s = textMeshPro.textInfo.meshInfo[materialIndex].uvs2;
         dst_uv2s[lastIndex + 0] = src_uv2s[lastIndex + 0];
         dst_uv2s[lastIndex + 1] = src_uv2s[lastIndex + 1];

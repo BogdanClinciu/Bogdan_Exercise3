@@ -68,7 +68,6 @@ public class DatabaseManager : MonoBehaviour
         SaveData data = new SaveData(ActiveDatabase);
 		string contents = JsonUtility.ToJson (data, true);
 		System.IO.File.WriteAllText (path, contents);
-		Debug.Log ("SavedData ");
 	}
 
     ///<summary>

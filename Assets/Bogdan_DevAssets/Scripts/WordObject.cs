@@ -4,16 +4,19 @@ using UnityEngine.UI;
 
 public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public string word {get; private set;} = string.Empty;
     [SerializeField]
     private Text wordText;
+    [SerializeField]
+    private Image backgroundImage;
+
+    public string word {get; private set;} = string.Empty;
 
     private bool isDown = false;
 
-    //we call SetWord when instantiating thw word object.
-    public void SetWord(string _word)
+
+    private void Start()
     {
-        word = _word;
+        word = name;
         wordText.text = word;
     }
 
@@ -36,11 +39,14 @@ public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        backgroundImage.color = UI_Manager.WordObjectHighlightColor;
         WordSelector.TogglePopupCurentLink(word);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        backgroundImage.color = UI_Manager.WordObjectNormalColor;
         WordSelector.TogglePopupCurentLink(string.Empty);
     }
+
 }

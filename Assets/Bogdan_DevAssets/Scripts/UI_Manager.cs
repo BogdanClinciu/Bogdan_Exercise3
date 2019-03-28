@@ -2,26 +2,29 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(UnknownWordManager))]
 public class UI_Manager : MonoBehaviour
 {
+    [SerializeField]
+    private Text sortButtonText;
+
+    [Header("Definition pannel refrences")]
     [SerializeField]
     private TMP_Text definitionText;
     [SerializeField]
     private Text definitionWordTitle;
 
-
-    [SerializeField]
-    private Text sortButtonText;
-
+    [Header("Modification buttons")]
     [SerializeField]
     private Button removeWordButton;
     [SerializeField]
     private Button editDefWordButton;
+
+    [Header("Edit pannel refrences")]
     [SerializeField]
     private Button saveEditButton;
     [SerializeField]
     private GameObject saveWarningText;
-
     [SerializeField]
     private GameObject editPanel;
     [SerializeField]
@@ -29,23 +32,35 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     private InputField editDefInput;
 
+    [Header("Word Object Colors")]
+    [SerializeField]
+    private Color wordObjectNormalColor;
+    [SerializeField]
+    private Color wordObjectHighlightColor;
+
     private bool isEditingDef = false;
     private UnknownWordManager unknownWordManager;
 
     public static WordObject ActiveWordObject {get; private set;}
+    public static Color WordObjectNormalColor {get; private set;}
+    public static Color WordObjectHighlightColor {get; private set;}
 
     private delegate void ChangeWordObject();
     private static ChangeWordObject OnChangeWordObject;
 
-    private const string SORT_ASCENDING = "A ► Z";
-    private const string SORT_DESCENDING = "Z ► A";
-    private const string SORT_HEADER = "Sorting:\n";
-    private const string NO_WORD = "No word selected.";
-    private const string NO_DEFNITION = "No definition.";
+    #region Constant strings
+        private const string SORT_ASCENDING = "A ► Z";
+        private const string SORT_DESCENDING = "Z ► A";
+        private const string SORT_HEADER = "Sorting:\n";
+        private const string NO_WORD = "No word selected.";
+        private const string NO_DEFNITION = "No definition.";
+    #endregion
 
 
     private void Start()
     {
+        WordObjectNormalColor = wordObjectNormalColor;
+        WordObjectHighlightColor = wordObjectHighlightColor;
         unknownWordManager = GetComponent<UnknownWordManager>();
         OnChangeWordObject += UpdateDefinitionUI;
         UpdateDefinitionUI();
@@ -76,13 +91,13 @@ public class UI_Manager : MonoBehaviour
         if(isEdit)
         {
             editWordInput.interactable = false;
-            editWordInput.text = ActiveWordObject.word;
+            editWordInput.text = ActiveWordObject.word.ToUpper();
             editDefInput.text = DatabaseManager.ActiveDatabase[ActiveWordObject.word];
         }
         else
         {
             editWordInput.interactable = true;
-            editWordInput.text = (WordHandler.CurentWordInput.Length > 0) ? WordHandler.CurentWordInput : string.Empty;
+            editWordInput.text = (WordHandler.CurentWordInput.Length > 0) ? WordHandler.CurentWordInput.ToUpper() : string.Empty;
             editDefInput.text = string.Empty;
         }
 
@@ -94,7 +109,7 @@ public class UI_Manager : MonoBehaviour
     public void OpenEditPanel(string clickedWord)
     {
         editWordInput.interactable = false;
-        editWordInput.text = clickedWord;
+        editWordInput.text = clickedWord.ToUpper();
         editDefInput.text = string.Empty;
         CheckIfCanSave();
         editPanel.SetActive(true);
@@ -129,6 +144,14 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    public void ToggleModificationButtons(bool state)
+    {
+        if(removeWordButton.interactable != state)
+        {
+            removeWordButton.interactable = state;
+            editDefWordButton.interactable = state;
+        }
+    }
 
     //Updates the definiton ui panel (triggered every time the ActiveWord changes )
     private void UpdateDefinitionUI()
@@ -144,15 +167,7 @@ public class UI_Manager : MonoBehaviour
             definitionText.text = NO_DEFNITION;
             definitionWordTitle.text = NO_WORD;
         }
-        ToggleModificationButtons(ActiveWordObject != null);
-    }
 
-    public void ToggleModificationButtons(bool state)
-    {
-        if(removeWordButton.interactable != state)
-        {
-            removeWordButton.interactable = state;
-            editDefWordButton.interactable = state;
-        }
+        ToggleModificationButtons(ActiveWordObject != null);
     }
 }

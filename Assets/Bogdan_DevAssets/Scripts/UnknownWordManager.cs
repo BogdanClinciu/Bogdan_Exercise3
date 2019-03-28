@@ -2,15 +2,13 @@
 using TMPro;
 using System.Collections;
 
-
-
 ///<summary>
 ///Handles creating the text links every time we select a word from the word panel
 ///</summary>
 public class UnknownWordManager : MonoBehaviour
 {
-    private TMP_TextInfo textInfo;
-    private TMP_WordInfo wordInfo;
+    private TMP_TextInfo textInfoCache;
+    private TMP_WordInfo wordInfoCache;
 
     #region Constant Strings
         private const string LINK_BEGIN = "<link=\""; //insert ID (int) here
@@ -28,29 +26,29 @@ public class UnknownWordManager : MonoBehaviour
     public void CreateTextMarkup(TMP_Text definitionsText)
     {
         //The coroutine here is used to delay the formating (presumably because either unity or text mesh pro processes occur at late update, so we skip the curent frame)
-        StartCoroutine(BeginCreateMarkup(definitionsText));
+        StartCoroutine(CreateMarkup(definitionsText));
     }
 
-    private IEnumerator BeginCreateMarkup(TMP_Text definitionsText)
+    private IEnumerator CreateMarkup(TMP_Text definitionsText)
     {
         yield return null;
         string linkedText = string.Empty;
 
         if(definitionsText.text.Length > 0)
         {
-            textInfo = definitionsText.textInfo;
-            for (int i = 0; i < textInfo.wordCount; i++)
+            textInfoCache = definitionsText.textInfo;
+            for (int i = 0; i < textInfoCache.wordCount; i++)
             {
-                wordInfo = textInfo.wordInfo[i];
+                wordInfoCache = textInfoCache.wordInfo[i];
 
-                if(wordInfo.GetWord().Length > 2 && !DatabaseManager.ActiveDatabase.ContainsKey(wordInfo.GetWord().ToLower()))
+                if(wordInfoCache.GetWord().Length > 2 && !DatabaseManager.ActiveDatabase.ContainsKey(wordInfoCache.GetWord().ToLower()))
                 {
-                    linkedText += LINK_BEGIN + wordInfo.GetWord() + LINK_CLOSE + COLOR_BEGIN +
-                        wordInfo.GetWord() + COLOR_END + LINK_END + SPACE;
+                    linkedText += LINK_BEGIN + wordInfoCache.GetWord() + LINK_CLOSE + COLOR_BEGIN +
+                        wordInfoCache.GetWord() + COLOR_END + LINK_END + SPACE;
                 }
                 else
                 {
-                    linkedText += wordInfo.GetWord() + SPACE;
+                    linkedText += wordInfoCache.GetWord() + SPACE;
                 }
             }
             definitionsText.text = linkedText;

@@ -131,7 +131,7 @@ public class WordHandler : MonoBehaviour
             {
                 //We create and initialize word objects
                 WordObject wordObjectCache = Instantiate(wordPrefab, wordsRect).GetComponent<WordObject>();
-                wordObjectCache.SetWord(key);
+                wordObjectCache.name = key;
                 activeWordObjects.Add(key, wordObjectCache);
             }
         }

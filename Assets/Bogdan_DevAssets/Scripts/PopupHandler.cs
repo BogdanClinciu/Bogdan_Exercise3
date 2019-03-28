@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,10 +15,11 @@ public class PopupHandler : MonoBehaviour
     [SerializeField]
     private RectTransform fullScreenRect;
 
+    [Header("Popup text colors")]
     [SerializeField]
     private Color wordExistsColor;
     [SerializeField]
-    private Color wordDoesNotExistColor;
+    private Color wordNotExistColor;
 
     private bool isShowing;
     private Vector2 xLimitsMin;
@@ -63,8 +63,8 @@ public class PopupHandler : MonoBehaviour
             }
             else
             {
-                wordText.color = wordDoesNotExistColor;
-                definitionText.color = wordDoesNotExistColor;
+                wordText.color = wordNotExistColor;
+                definitionText.color = wordNotExistColor;
                 definitionText.text = NO_WORD;
             }
         }
