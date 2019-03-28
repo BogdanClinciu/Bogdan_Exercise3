@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
+public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public string word {get; private set;} = string.Empty;
     [SerializeField]
@@ -32,5 +32,15 @@ public class WordObject : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
                 UI_Manager.SetActiveWord(this);
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        WordSelector.TogglePopupCurentLink(word);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        WordSelector.TogglePopupCurentLink(string.Empty);
     }
 }

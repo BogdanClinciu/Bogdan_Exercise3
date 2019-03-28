@@ -17,6 +17,9 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField]
     private Camera mainCamera;
 
+    [SerializeField]
+    private PopupHandler popupHandlerRefrence;
+
     private TextMeshProUGUI textMeshPro;
 
     private bool isHoveringObject;
@@ -25,12 +28,14 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private int lastIndex = -1;
 
     private Matrix4x4 matrix;
-
     private TMP_MeshInfo[] m_cachedMeshInfoVertexData;
+
+    private static PopupHandler popupHandler;
 
 
     void Awake()
     {
+        popupHandler = popupHandlerRefrence;
         textMeshPro = gameObject.GetComponent<TextMeshProUGUI>();
         mainCanvas = gameObject.GetComponentInParent<Canvas>();
 
@@ -57,7 +62,9 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             if (selectedWord != -1 && (wordIndex == -1 || wordIndex != selectedWord))
             {
                 CurentLink = string.Empty;
+                popupHandler.TogglePopupPanel(false);
                 TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
+                //Debug.Log(CurentLink);
 
                 // Iterate through each of the characters of the word.
                 for (int i = 0; i < wInfo.characterCount; i++)
@@ -74,7 +81,6 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                     Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
 
                     Color32 c = vertexColors[vertexIndex + 0].Tint(1.33333f);
-
                     vertexColors[vertexIndex + 0] = c;
                     vertexColors[vertexIndex + 1] = c;
                     vertexColors[vertexIndex + 2] = c;
@@ -93,6 +99,9 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 selectedWord = wordIndex;
 
                 TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[wordIndex];
+                CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
+                popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+                //Debug.Log(CurentLink);
 
                 // Iterate through each of the characters of the word.
                 for (int i = 0; i < wInfo.characterCount; i++)
@@ -108,7 +117,6 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                     Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
 
                     Color32 c = vertexColors[vertexIndex + 0].Tint(0.75f);
-
                     vertexColors[vertexIndex + 0] = c;
                     vertexColors[vertexIndex + 1] = c;
                     vertexColors[vertexIndex + 2] = c;
@@ -118,30 +126,30 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 // Update Geometry
                 textMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
 
-            }
-        #endregion
-
-            #region Link Handling
-            // Check if mouse intersects with any links.
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(textMeshPro, Input.mousePosition, mainCamera);
-
-            // Clear previous link selection if one existed.
-            if ((linkIndex == -1 && selectedLink != -1) || linkIndex != selectedLink)
-            {
-                selectedLink = -1;
-            }
-
-            // Handle new Link selection.
-            if (linkIndex != -1 && linkIndex != selectedLink)
-            {
-                selectedLink = linkIndex;
-                TMP_LinkInfo linkInfo = textMeshPro.textInfo.linkInfo[linkIndex];
-                Vector3 worldPointInRectangle = Vector3.zero;
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(textMeshPro.rectTransform, Input.mousePosition, mainCamera, out worldPointInRectangle);
-                CurentLink = linkInfo.GetLinkID();
-            }
+            #endregion
         }
-        #endregion
+            // link handling is disabled
+            #region Link Handling
+            //     // Check if mouse intersects with any links.
+            //     int linkIndex = TMP_TextUtilities.FindIntersectingLink(textMeshPro, Input.mousePosition, mainCamera);
+
+            //     // Clear previous link selection if one existed.
+            //     if ((linkIndex == -1 && selectedLink != -1) || linkIndex != selectedLink)
+            //     {
+            //         selectedLink = -1;
+            //     }
+
+            //     // Handle new Link selection.
+            //     if (linkIndex != -1 && linkIndex != selectedLink)
+            //     {
+            //         selectedLink = linkIndex;
+            //         TMP_LinkInfo linkInfo = textMeshPro.textInfo.linkInfo[linkIndex];
+            //         Vector3 worldPointInRectangle = Vector3.zero;
+            //         RectTransformUtility.ScreenPointToWorldPointInRectangle(textMeshPro.rectTransform, Input.mousePosition, mainCamera, out worldPointInRectangle);
+            //         CurentLink = linkInfo.GetLinkID();
+            //     }
+            #endregion
+            }
 
         else
         {
@@ -161,6 +169,12 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
     }
 
+    //Change the curent word link and toggle the popup group if not empty
+    public static void TogglePopupCurentLink(string word)
+    {
+        CurentLink = word;
+        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
