@@ -7,20 +7,25 @@ using UnityEngine.EventSystems;
 ///Modified text mesh pro example:
 ///<seealso cref="TMP_TextSelector_B"/>
 ///</summary>
-public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+[RequireComponent(typeof(PopupHandler))]
+public class WordSelector : MonoBehaviour
 {
-
     public static string CurentLink {get; private set;} = string.Empty;
 
     [SerializeField]
     private Canvas mainCanvas;
     [SerializeField]
-    private Camera mainCamera;
-
-    [SerializeField]
-    private PopupHandler popupHandlerRefrence;
-
     private TextMeshProUGUI textMeshPro;
+
+    [Header("TextColors")]
+    [SerializeField]
+    private Color32 existingUnselected;
+    [SerializeField]
+    private Color32 existingSelected;
+    [SerializeField]
+    private Color32 newUnselected;
+    [SerializeField]
+    private Color32 newSelected;
 
     private bool isHoveringObject;
     private int selectedWord = -1;
@@ -35,125 +40,28 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private void Awake()
     {
-        popupHandler = popupHandlerRefrence;
-        textMeshPro = gameObject.GetComponent<TextMeshProUGUI>();
-        mainCanvas = gameObject.GetComponentInParent<Canvas>();
-
-        // Get a reference to the camera if Canvas Render Mode is not ScreenSpace Overlay.
-        if (mainCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
-        {
-            mainCamera = null;
-        }
-        else
-        {
-            mainCamera = mainCanvas.worldCamera;
-        }
+        popupHandler = GetComponent<PopupHandler>();
     }
 
     private void LateUpdate()
     {
         if (isHoveringObject)
         {
-            #region Word Selection Handling
             //Check if Mouse intersects any words and if so assign a random color to that word.
-            int wordIndex = TMP_TextUtilities.FindIntersectingWord(textMeshPro, Input.mousePosition, mainCamera);
+            int wordIndex = TMP_TextUtilities.FindIntersectingWord(textMeshPro, Input.mousePosition, null);
 
-            // Clear previous word selection.
             if (selectedWord != -1 && (wordIndex == -1 || wordIndex != selectedWord))
             {
-                CurentLink = string.Empty;
-                popupHandler.TogglePopupPanel(false);
-                TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
-                //Debug.Log(CurentLink);
-
-                // Iterate through each of the characters of the word.
-                for (int i = 0; i < wInfo.characterCount; i++)
-                {
-                    int characterIndex = wInfo.firstCharacterIndex + i;
-
-                    // Get the index of the material / sub text object used by this character.
-                    int meshIndex = textMeshPro.textInfo.characterInfo[characterIndex].materialReferenceIndex;
-
-                    // Get the index of the first vertex of this character.
-                    int vertexIndex = textMeshPro.textInfo.characterInfo[characterIndex].vertexIndex;
-
-                    // Get a reference to the vertex color
-                    Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
-
-                    Color32 c = vertexColors[vertexIndex + 0].Tint(1.33333f);
-                    vertexColors[vertexIndex + 0] = c;
-                    vertexColors[vertexIndex + 1] = c;
-                    vertexColors[vertexIndex + 2] = c;
-                    vertexColors[vertexIndex + 3] = c;
-                }
-                // Update Geometry
-                textMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
-
-                selectedWord = -1;
+                ClearTextSelection();
             }
 
-
-            // Word Selection Handling
             if (wordIndex != -1 && wordIndex != selectedWord && !(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
             {
-                selectedWord = wordIndex;
-
-                TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[wordIndex];
-                CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
-                popupHandler.TogglePopupPanel(CurentLink != string.Empty);
-                //Debug.Log(CurentLink);
-
-                // Iterate through each of the characters of the word.
-                for (int i = 0; i < wInfo.characterCount; i++)
-                {
-                    int characterIndex = wInfo.firstCharacterIndex + i;
-
-                    // Get the index of the material / sub text object used by this character.
-                    int meshIndex = textMeshPro.textInfo.characterInfo[characterIndex].materialReferenceIndex;
-
-                    int vertexIndex = textMeshPro.textInfo.characterInfo[characterIndex].vertexIndex;
-
-                    // Get a reference to the vertex color
-                    Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
-
-                    Color32 c = vertexColors[vertexIndex + 0].Tint(0.75f);
-                    vertexColors[vertexIndex + 0] = c;
-                    vertexColors[vertexIndex + 1] = c;
-                    vertexColors[vertexIndex + 2] = c;
-                    vertexColors[vertexIndex + 3] = c;
-                }
-
-                // Update Geometry
-                textMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
-
-            #endregion
-        }
-            // link handling is disabled
-            #region Link Handling
-            //     // Check if mouse intersects with any links.
-            //     int linkIndex = TMP_TextUtilities.FindIntersectingLink(textMeshPro, Input.mousePosition, mainCamera);
-
-            //     // Clear previous link selection if one existed.
-            //     if ((linkIndex == -1 && selectedLink != -1) || linkIndex != selectedLink)
-            //     {
-            //         selectedLink = -1;
-            //     }
-
-            //     // Handle new Link selection.
-            //     if (linkIndex != -1 && linkIndex != selectedLink)
-            //     {
-            //         selectedLink = linkIndex;
-            //         TMP_LinkInfo linkInfo = textMeshPro.textInfo.linkInfo[linkIndex];
-            //         Vector3 worldPointInRectangle = Vector3.zero;
-            //         RectTransformUtility.ScreenPointToWorldPointInRectangle(textMeshPro.rectTransform, Input.mousePosition, mainCamera, out worldPointInRectangle);
-            //         CurentLink = linkInfo.GetLinkID();
-            //     }
-            #endregion
+                HandleTextSelection(wordIndex);
             }
-
+        }
         else
         {
-
             // Restore any character that may have been modified
             if (lastIndex != -1)
             {
@@ -169,17 +77,18 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void PointerEnter()
     {
         isHoveringObject = true;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void PointerExit()
     {
         isHoveringObject = false;
         if (CurentLink != string.Empty)
         {
             CurentLink = string.Empty;
+            ClearTextSelection();
         }
     }
 
@@ -188,6 +97,76 @@ public class WordSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         CurentLink = word;
         popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+    }
+
+    // Clear previous word selection.
+    private void ClearTextSelection()
+    {
+        CurentLink = string.Empty;
+        popupHandler.TogglePopupPanel(false);
+
+        TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
+
+        Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord()) ? existingUnselected : newUnselected;
+
+        // Iterate through each of the characters of the word.
+        for (int i = 0; i < wInfo.characterCount; i++)
+        {
+            int characterIndex = wInfo.firstCharacterIndex + i;
+
+            // Get the index of the material / sub text object used by this character.
+            int meshIndex = textMeshPro.textInfo.characterInfo[characterIndex].materialReferenceIndex;
+
+            // Get the index of the first vertex of this character.
+            int vertexIndex = textMeshPro.textInfo.characterInfo[characterIndex].vertexIndex;
+
+            // Get a reference to the vertex color
+            Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
+
+            //Color32 c = vertexColors[vertexIndex + 0].Tint(1.33333f);
+            vertexColors[vertexIndex + 0] = c;
+            vertexColors[vertexIndex + 1] = c;
+            vertexColors[vertexIndex + 2] = c;
+            vertexColors[vertexIndex + 3] = c;
+        }
+        // Update Geometry
+        textMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
+
+        selectedWord = -1;
+    }
+
+    private void HandleTextSelection(int wordIndex)
+    {
+        selectedWord = wordIndex;
+
+        TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[wordIndex];
+        CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
+        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+
+        Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord()) ? existingSelected : newSelected;
+
+        // Iterate through each of the characters of the word.
+        for (int i = 0; i < wInfo.characterCount; i++)
+        {
+            int characterIndex = wInfo.firstCharacterIndex + i;
+
+            // Get the index of the material / sub text object used by this character.
+            int meshIndex = textMeshPro.textInfo.characterInfo[characterIndex].materialReferenceIndex;
+
+            int vertexIndex = textMeshPro.textInfo.characterInfo[characterIndex].vertexIndex;
+
+            // Get a reference to the vertex color
+            Color32[] vertexColors = textMeshPro.textInfo.meshInfo[meshIndex].colors32;
+
+            //Color32 c = vertexColors[vertexIndex + 0].Tint(0.75f);
+            vertexColors[vertexIndex + 0] = c;
+            vertexColors[vertexIndex + 1] = c;
+            vertexColors[vertexIndex + 2] = c;
+            vertexColors[vertexIndex + 3] = c;
+        }
+
+        // Update Geometry
+        textMeshPro.UpdateVertexData(TMP_VertexDataUpdateFlags.All);
     }
 
     private void RestoreCachedVertexAttributes(int index)
