@@ -29,7 +29,6 @@ public class WordSelector : MonoBehaviour
 
     private bool isHoveringObject;
     private int selectedWord = -1;
-    private int selectedLink = -1;
     private int lastIndex = -1;
 
     private Matrix4x4 matrix;
@@ -55,7 +54,7 @@ public class WordSelector : MonoBehaviour
                 ClearTextSelection();
             }
 
-            if (wordIndex != -1 && wordIndex != selectedWord && !(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
+            if (wordIndex != -1 && wordIndex != selectedWord)
             {
                 HandleTextSelection(wordIndex);
             }
@@ -106,8 +105,15 @@ public class WordSelector : MonoBehaviour
         popupHandler.TogglePopupPanel(false);
 
         TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
-
-        Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord()) ? existingUnselected : newUnselected;
+        Color32 c;
+        if(DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord().ToLower()) || wInfo.GetWord().Length <= 2)
+        {
+            c = existingUnselected;
+        }
+        else
+        {
+            c = newUnselected;
+        }
 
         // Iterate through each of the characters of the word.
         for (int i = 0; i < wInfo.characterCount; i++)
@@ -143,7 +149,16 @@ public class WordSelector : MonoBehaviour
         CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
         popupHandler.TogglePopupPanel(CurentLink != string.Empty);
 
-        Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord()) ? existingSelected : newSelected;
+        Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord().ToLower()) ? existingSelected : newSelected;
+
+        if(DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord().ToLower()) || wInfo.GetWord().Length <= 2)
+        {
+            c = existingSelected;
+        }
+        else
+        {
+            c = newSelected;
+        }
 
         // Iterate through each of the characters of the word.
         for (int i = 0; i < wInfo.characterCount; i++)
