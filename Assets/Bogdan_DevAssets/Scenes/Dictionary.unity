@@ -680,7 +680,18 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1593561149}
+        m_MethodName: CheckIfCanSave
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.InputField+OnChangeEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
@@ -3084,7 +3095,8 @@ MonoBehaviour:
   removeWordButton: {fileID: 422149004}
   editDefWordButton: {fileID: 1020497182}
   saveEditButton: {fileID: 1464536452}
-  saveWarningText: {fileID: 2033992783}
+  saveWarningTextParent: {fileID: 2033992783}
+  saveWarningText: {fileID: 1022327492}
   editPanel: {fileID: 1841844221}
   editWordInput: {fileID: 818148172}
   editDefInput: {fileID: 378345990}

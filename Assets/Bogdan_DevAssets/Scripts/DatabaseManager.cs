@@ -53,14 +53,6 @@ public class DatabaseManager : MonoBehaviour
     }
 
     ///<summary>
-    ///Returns true if <paramref name="wordKey"/> definition is not empty within the dictionary database, and if <paramref name="wordKey"/> exists.
-    ///</summary>
-    public static bool WordHasDefinition(string wordKey)
-    {
-        return ActiveDatabase.ContainsKey(wordKey) && !ActiveDatabase[wordKey].Equals(string.Empty);
-    }
-
-    ///<summary>
     ///Convets the curently loaded database to a SaveData object and writes it to the persistent data path.
     ///</summary>
     public static void SaveDatabase()

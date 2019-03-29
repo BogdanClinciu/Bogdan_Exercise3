@@ -24,7 +24,9 @@ public class UI_Manager : MonoBehaviour
     [SerializeField]
     private Button saveEditButton;
     [SerializeField]
-    private GameObject saveWarningText;
+    private GameObject saveWarningTextParent;
+    [SerializeField]
+    private Text saveWarningText;
     [SerializeField]
     private GameObject editPanel;
     [SerializeField]
@@ -54,6 +56,8 @@ public class UI_Manager : MonoBehaviour
         private const string SORT_HEADER = "Sorting:\n";
         private const string NO_WORD = "No word selected.";
         private const string NO_DEFNITION = "No definition.";
+        private const string INCOMPLETE_EDIT_WARNING = "Both the word and the definition field need to be filled in order to add or edit an entry";
+        private const string WORD_EXISTS_WARNING = "The database already contains this word, saving will overwrite\nthe curent definition entry of this word.";
     #endregion
 
 
@@ -128,23 +132,23 @@ public class UI_Manager : MonoBehaviour
     //Determines if the save button can be pressed and sets interactability (triggered from the editWordInputField's on value changed)
     public void CheckIfCanSave()
     {
-        if(editWordInput.text.Length > 0)
-        {
-            if(DatabaseManager.ActiveDatabase.ContainsKey(editWordInput.text.ToLower()))
+            if (editDefInput.text.Length < 1)
             {
-                saveWarningText.SetActive(true);
+                saveWarningTextParent.SetActive(true);
+                saveWarningText.text = INCOMPLETE_EDIT_WARNING;
+                saveEditButton.interactable = false;
+            }
+            else if (DatabaseManager.ActiveDatabase.ContainsKey(editWordInput.text.ToLower()))
+            {
+                saveWarningTextParent.SetActive(true);
+                saveWarningText.text = WORD_EXISTS_WARNING;
+                saveEditButton.interactable = (editDefInput.text.Length > 0) ? true : false;
             }
             else
             {
-                saveWarningText.SetActive(false);
+                saveWarningTextParent.SetActive(false);
+                saveEditButton.interactable = true;
             }
-
-            saveEditButton.interactable = true;
-        }
-        else
-        {
-            saveEditButton.interactable = false;
-        }
     }
 
     public void ToggleModificationButtons(bool state)
