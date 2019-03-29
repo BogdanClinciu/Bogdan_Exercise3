@@ -95,4 +95,6 @@ public class DatabaseManager : MonoBehaviour
 			Debug.Log (ex.Message);
 		}
 	}
+
+    //        ActiveDatabase = JsonUtility.FromJson<SaveData>(Resources.Load<TextAsset>(path).text).ToDictionary();
 }

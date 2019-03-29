@@ -68,9 +68,12 @@ public class UI_Manager : MonoBehaviour
 
     private void Update()
     {
-        if(WordSelector.CurentLink.Length > 0 && Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0))
         {
-            OpenEditPanel(WordSelector.CurentLink);
+            if(WordSelector.CurentLink.Length > 0)
+            {
+                OpenEditPanel(WordSelector.CurentLink);
+            }
         }
     }
 

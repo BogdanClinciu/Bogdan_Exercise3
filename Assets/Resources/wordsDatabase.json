@@ -1,0 +1,72 @@
+{
+    "wordsData": [
+        {
+            "word": "item",
+            "desc": "An individual article or unit, especially one that is part of a list, collection, or set."
+        },
+        {
+            "word": "app",
+            "desc": "An application, especially as downloaded by a user to a mobile device."
+        },
+        {
+            "word": "apple",
+            "desc": "The round fruit of a tree of the rose family, which typically has thin green or red skin and crisp flesh."
+        },
+        {
+            "word": "redundant",
+            "desc": "The word redundant applies to things that are unnecessary or could be left out Calling a blank sheet of paper empty is redundant Teachers often tell students to avoid being redundant meaning avoid saying something twice or more ​"
+        },
+        {
+            "word": "testword0",
+            "desc": "TestWord0"
+        },
+        {
+            "word": "testword1",
+            "desc": "test description one"
+        },
+        {
+            "word": "testword2",
+            "desc": "TestWord2"
+        },
+        {
+            "word": "new",
+            "desc": "Produced, introduced, or discovered recently or now for the first time; not existing before."
+        },
+        {
+            "word": "tube",
+            "desc": "Long hollow piece of material with a circular section, usualy refers to objects used to transport fluids."
+        },
+        {
+            "word": "adjecent",
+            "desc": "Describing the proximity to the other object. Ex: Each cube face has four adjecent faces."
+        },
+        {
+            "word": "testadd",
+            "desc": "This is a new word definition made in order to test adding a new word - definition pair to the word database."
+        },
+        {
+            "word": "testword6",
+            "desc": "another definition and another one"
+        },
+        {
+            "word": "typically",
+            "desc": "Describing a usual occurance."
+        },
+        {
+            "word": "word",
+            "desc": "The groups of squigly lines over here"
+        },
+        {
+            "word": "skin",
+            "desc": "The thin layer of tissue forming the natural outer covering of the body of a person or animal."
+        },
+        {
+            "word": "fluids",
+            "desc": "something that is not solid...."
+        },
+        {
+            "word": "definition",
+            "desc": "A statement of the exact meaning of a word, especially in a dictionary."
+        }
+    ]
+}

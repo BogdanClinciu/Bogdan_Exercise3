@@ -45,21 +45,20 @@ public class PopupHandler : MonoBehaviour
     ///<summary>
     ///Toggles the popup panel to state and sets popup panel to display corect information;
     ///</summary>
-    public void TogglePopupPanel(bool state)
+    public void TogglePopupPanel(string word)
     {
         StopAllCoroutines();
-        StartCoroutine(FadePopup(state));
-        isShowing = state;
-        if(state)
+        if(!string.IsNullOrEmpty(word))
         {
+            isShowing = true;
             panelTransform.position = Input.mousePosition;
-            wordText.text = WordSelector.CurentLink.ToUpper();
+            wordText.text = word.ToUpper();
 
-            if(DatabaseManager.ActiveDatabase.ContainsKey(WordSelector.CurentLink.ToLower()))
+            if(DatabaseManager.ActiveDatabase.ContainsKey(word.ToLower()))
             {
                 wordText.color = wordExistsColor;
                 definitionText.color = Color.white;
-                definitionText.text = DatabaseManager.ActiveDatabase[WordSelector.CurentLink.ToLower()];
+                definitionText.text = DatabaseManager.ActiveDatabase[word.ToLower()];
             }
             else
             {
@@ -68,6 +67,11 @@ public class PopupHandler : MonoBehaviour
                 definitionText.text = NO_WORD;
             }
         }
+        else
+        {
+            isShowing = false;
+        }
+        StartCoroutine(FadePopup());
     }
 
     //Prevents the popup pannel from going off screen
@@ -81,10 +85,10 @@ public class PopupHandler : MonoBehaviour
     }
 
     //smoothly fades in the popup panel
-    private IEnumerator FadePopup(bool fadeIn)
+    private IEnumerator FadePopup()
     {
         float startOpacity = popupPanelCanvasGroup.alpha;
-        float endOpacity = (fadeIn) ? 1 : 0;
+        float endOpacity = (isShowing) ? 1 : 0;
         for (float t = 0.0f; t < 1.0f; t += Time.deltaTime/POP_TIME)
         {
             popupPanelCanvasGroup.alpha = Mathf.Lerp(startOpacity, endOpacity, t);

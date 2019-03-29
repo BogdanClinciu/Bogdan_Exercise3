@@ -3104,7 +3104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlightColor:
     serializedVersion: 2
-    rgba: 4278255364
+    rgba: 4294551154
 --- !u!114 &1593561151
 MonoBehaviour:
   m_ObjectHideFlags: 0

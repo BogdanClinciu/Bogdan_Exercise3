@@ -84,7 +84,7 @@ public class WordSelector : MonoBehaviour
     public void PointerExit()
     {
         isHoveringObject = false;
-        if (CurentLink != string.Empty)
+        if (!string.IsNullOrEmpty(CurentLink))
         {
             CurentLink = string.Empty;
             ClearTextSelection();
@@ -94,15 +94,14 @@ public class WordSelector : MonoBehaviour
     //Change the curent word link and toggle the popup group if not empty
     public static void TogglePopupCurentLink(string word)
     {
-        CurentLink = word;
-        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+        popupHandler.TogglePopupPanel(word);
     }
 
     // Clear previous word selection.
     private void ClearTextSelection()
     {
         CurentLink = string.Empty;
-        popupHandler.TogglePopupPanel(false);
+        popupHandler.TogglePopupPanel(CurentLink);
 
         TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
         Color32 c;
@@ -147,7 +146,7 @@ public class WordSelector : MonoBehaviour
 
         TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[wordIndex];
         CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
-        popupHandler.TogglePopupPanel(CurentLink != string.Empty);
+        popupHandler.TogglePopupPanel(CurentLink);
 
         Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord().ToLower()) ? existingSelected : newSelected;
 
