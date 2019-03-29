@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 ///Modified text mesh pro example:
 ///<seealso cref="TMP_TextSelector_B"/>
 ///</summary>
-[RequireComponent(typeof(PopupHandler))]
 public class WordSelector : MonoBehaviour
 {
     public static string CurentLink {get; private set;} = string.Empty;
@@ -16,6 +15,8 @@ public class WordSelector : MonoBehaviour
     private Canvas mainCanvas;
     [SerializeField]
     private TextMeshProUGUI textMeshPro;
+    [SerializeField]
+    private PopupHandler popupHandlerPointer;
 
     [Header("TextColors")]
     [SerializeField]
@@ -39,7 +40,7 @@ public class WordSelector : MonoBehaviour
 
     private void Awake()
     {
-        popupHandler = GetComponent<PopupHandler>();
+        popupHandler = popupHandlerPointer;
     }
 
     private void LateUpdate()

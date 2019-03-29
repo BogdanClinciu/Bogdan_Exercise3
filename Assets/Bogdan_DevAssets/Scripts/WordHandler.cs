@@ -56,6 +56,7 @@ public class WordHandler : MonoBehaviour
         {
             DatabaseManager.AddWord(editWordInput.text.ToLower(), editDefInput.text);
             UpdateWordPanel();
+            FilterSearch();
         }
 
         public void RemoveWord()

@@ -2,11 +2,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(UnknownWordManager))]
 public class UI_Manager : MonoBehaviour
 {
     [SerializeField]
     private Text sortButtonText;
+    [SerializeField]
+    private UnknownWordManager unknownWordManager;
 
     [Header("Definition pannel refrences")]
     [SerializeField]
@@ -41,7 +42,6 @@ public class UI_Manager : MonoBehaviour
     private Color wordObjectHighlightColor;
 
     private bool isEditingDef = false;
-    private UnknownWordManager unknownWordManager;
 
     public static WordObject ActiveWordObject {get; private set;}
     public static Color WordObjectNormalColor {get; private set;}
@@ -65,7 +65,6 @@ public class UI_Manager : MonoBehaviour
     {
         WordObjectNormalColor = wordObjectNormalColor;
         WordObjectHighlightColor = wordObjectHighlightColor;
-        unknownWordManager = GetComponent<UnknownWordManager>();
         OnChangeWordObject += UpdateDefinitionUI;
         UpdateDefinitionUI();
     }
