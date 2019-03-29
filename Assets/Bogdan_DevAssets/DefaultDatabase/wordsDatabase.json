@@ -67,6 +67,14 @@
         {
             "word": "definition",
             "desc": "A statement of the exact meaning of a word, especially in a dictionary."
+        },
+        {
+            "word": "bumper",
+            "desc": "test description. asdasdasdasdasdasdasd"
+        },
+        {
+            "word": "newland",
+            "desc": "New word in the dictionary."
         }
     ]
 }

@@ -4,6 +4,9 @@ using SaveDataTypes;
 
 public class DatabaseManager : MonoBehaviour
 {
+    [SerializeField]
+    private TextAsset defaultDatabase;
+
     public static Dictionary<string,string> ActiveDatabase {get; private set;}
 
     private static string path;
@@ -77,8 +80,8 @@ public class DatabaseManager : MonoBehaviour
 			}
             else
             {
-				Debug.Log("Unable to read input file, creating blank database");
-				ActiveDatabase = new Dictionary<string, string>();
+				Debug.Log("Unable to read input file, creating default database");
+                ActiveDatabase = JsonUtility.FromJson<SaveData>(defaultDatabase.ToString()).ToDictionary();
                 SaveDatabase();
 			}
 		}
