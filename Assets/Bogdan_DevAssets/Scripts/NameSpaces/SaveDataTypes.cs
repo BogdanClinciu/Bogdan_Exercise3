@@ -29,7 +29,7 @@ namespace SaveDataTypes
         }
 
         ///<summary>
-        ///Converts a SaveData object to a dictionary.
+        ///Converts a SaveData object to a dictionary of type.
         ///</summary>
         public Dictionary<string,string> ToDictionary()
         {

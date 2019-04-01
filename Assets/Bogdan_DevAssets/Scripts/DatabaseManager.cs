@@ -16,6 +16,7 @@ public class DatabaseManager : MonoBehaviour
 
     private void Awake()
     {
+        //set the path to the persistent application path.
 		path = Application.persistentDataPath + filename;
 		LoadDatabase();
 	}
@@ -66,30 +67,56 @@ public class DatabaseManager : MonoBehaviour
 	}
 
     ///<summary>
-    ///Loads a SaveData type from the persistent data path and convets it to a Dictionary of string string, if loading fails it creates the file and initializes and empty dictionary.
+    ///Loads a SaveData type from the persistent data path and convets it to a Dictionary of string string, if loading fails we load the default database and save that.
     ///</summary>
     private void LoadDatabase()
     {
-		try
+        if (System.IO.File.Exists(path))
         {
-			if (System.IO.File.Exists(path))
+            try
             {
 				SaveData data = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(path));
                 ActiveDatabase = data.ToDictionary();
-                //Debug.Log("Active database loaded");
 			}
-            else
+            catch (System.Exception ex)
             {
-				Debug.Log("Unable to read input file, creating default database");
+                // TODO: Add a "Error loading database"  UI message, with the posibility to load defaults or exit the application (also anounce the location of the database json)
+                Debug.Log (ex.Message);
+            }
+        }
+        else
+        {
+            try
+            {
+                // TODO: Add a "Unable to find word database file"  UI message, with the posibility to load defaults or exit the application (also anounce the location of the database json)
+                Debug.Log("Unable to find word database file, writing default database");
                 ActiveDatabase = JsonUtility.FromJson<SaveData>(defaultDatabase.ToString()).ToDictionary();
                 SaveDatabase();
-			}
-		}
-
-		catch (System.Exception ex) {
-			Debug.Log (ex.Message);
-		}
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log(ex.Message);
+            }
+        }
 	}
-
-    //        ActiveDatabase = JsonUtility.FromJson<SaveData>(Resources.Load<TextAsset>(path).text).ToDictionary();
 }
+		// try
+        // {
+		// 	if (System.IO.File.Exists(path))
+        //     {
+		// 		SaveData data = JsonUtility.FromJson<SaveData>(System.IO.File.ReadAllText(path));
+        //         ActiveDatabase = data.ToDictionary();
+		// 	}
+        //     else
+        //     {
+        //         // TODO: Add a "Unable to find word database file"  UI message, with the posibility to load defaults or exit the application (also anounce the location of the database json)
+		// 		Debug.Log("Unable to find word database file, writing default database");
+        //         ActiveDatabase = JsonUtility.FromJson<SaveData>(defaultDatabase.ToString()).ToDictionary();
+        //         SaveDatabase();
+		// 	}
+		// }
+
+		// catch (System.Exception ex) {
+        //     // TODO: Add a "Error loading database"  UI message, with the posibility to load defaults or exit the application (also anounce the location of the database json)
+		// 	Debug.Log (ex.Message);
+		// }

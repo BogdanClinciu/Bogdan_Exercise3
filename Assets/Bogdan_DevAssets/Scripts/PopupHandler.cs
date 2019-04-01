@@ -30,12 +30,14 @@ public class PopupHandler : MonoBehaviour
 
     private void Start()
     {
-        SetMouseInputLimits();
+        //Calculate the popup panel limits and set the popup panel alpha to zero
+        SetPopupPositionLimits();
         popupPanelCanvasGroup.alpha = 0;
     }
 
     private void Update()
     {
+        // if the popup panel is visible we set its position to the clamped pointer position
         if(isShowing)
         {
             panelTransform.position = LimitedPosition();
@@ -43,7 +45,7 @@ public class PopupHandler : MonoBehaviour
     }
 
     ///<summary>
-    ///Toggles the popup panel to state and sets popup panel to display corect information;
+    ///Toggles the popup panel to state and updateds the popup panel displayed information.
     ///</summary>
     public void TogglePopupPanel(string word)
     {
@@ -74,7 +76,10 @@ public class PopupHandler : MonoBehaviour
         StartCoroutine(FadePopup());
     }
 
-    //Prevents the popup pannel from going off screen
+    ///<summary>
+    ///Returns the pointer position clamped between the precalculated min limit and max limit vectors;
+    ///<seealso cref="SetPopupPositionLimits.cs"/>
+    ///</summary>
     private Vector2 LimitedPosition()
     {
         Vector2 targetPosition;
@@ -84,6 +89,9 @@ public class PopupHandler : MonoBehaviour
         return targetPosition;
     }
 
+    ///<summary>
+    ///Smothly lerps the popup panel's canvas group alpha from whatever the value is when the coroutine starts (startOpacity) to the required alpha valye (endOpacity, 0 or 1).
+    ///</summary>
     //smoothly fades in the popup panel
     private IEnumerator FadePopup()
     {
@@ -97,8 +105,10 @@ public class PopupHandler : MonoBehaviour
         popupPanelCanvasGroup.alpha = endOpacity;
     }
 
-    //sets the limits needed in order to clamp the mouse position in such a way to keep the popup panel entirely on screen
-    private void SetMouseInputLimits()
+    ///<summary>
+    ///Sets the limits needed in order to clamp the popup panel position in such a way to keep the popup panel entirely on screen
+    ///</summary>
+    private void SetPopupPositionLimits()
     {
         xLimitsMin.x = fullScreenRect.TransformPoint(fullScreenRect.rect.min).x + (panelTransform.position.x - panelTransform.TransformPoint(panelTransform.rect.min).x);
         xLimitsMax.x = fullScreenRect.TransformPoint(fullScreenRect.rect.max).x - (panelTransform.TransformPoint(panelTransform.rect.max).x - panelTransform.position.x);

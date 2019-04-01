@@ -17,12 +17,12 @@ public class UnknownWordManager : MonoBehaviour
     ///<summary>
     ///Applies word color highlights to <paramref name="definitionsText"/>'s words that are not contained by the word database.
     ///</summary>
-    public void CreateTextMarkup(TMP_Text definitionsText)
+    public void HilightUnknownWords(TMP_Text definitionsText)
     {
-        StartCoroutine(Timer(definitionsText));
+        StartCoroutine(HighlighWords(definitionsText));
     }
 
-    private IEnumerator Timer(TMP_Text definitionsText) {
+    private IEnumerator HighlighWords(TMP_Text definitionsText) {
         yield return null;
         textInfoCache = definitionsText.textInfo;
 

@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 ///</summary>
 public class WordSelector : MonoBehaviour
 {
-    public static string CurentLink {get; private set;} = string.Empty;
+    public static string CurrentWord {get; private set;} = string.Empty;
 
     [SerializeField]
     private Canvas mainCanvas;
@@ -40,6 +40,7 @@ public class WordSelector : MonoBehaviour
 
     private void Awake()
     {
+        //Sets the static popupHandler to the assigned pointer
         popupHandler = popupHandlerPointer;
     }
 
@@ -70,39 +71,49 @@ public class WordSelector : MonoBehaviour
             }
 
             //Clear link
-            if (CurentLink != string.Empty)
+            if (CurrentWord != string.Empty)
             {
-                CurentLink = string.Empty;
+                CurrentWord = string.Empty;
             }
         }
     }
 
+    ///<summary>
+    ///The on pointer enter method called from a different rect transfrom (used to keep this script separate from the gameobject we trigger the events on).
+    ///</summary>
     public void PointerEnter()
     {
         isHoveringObject = true;
     }
 
+    ///<summary>
+    ///The on pointer exit method called from a different rect transfrom (used to keep this script separate from the gameobject we trigger the events on).
+    ///</summary>
     public void PointerExit()
     {
         isHoveringObject = false;
-        if (!string.IsNullOrEmpty(CurentLink))
+        if (!string.IsNullOrEmpty(CurrentWord))
         {
-            CurentLink = string.Empty;
+            CurrentWord = string.Empty;
             ClearTextSelection();
         }
     }
 
-    //Change the curent word link and toggle the popup group if not empty
+    ///<summary>
+    ///A static trigger for the popup handler toggle called from the word objects in the word panel on pointer enter and exit.
+    ///</summary>
     public static void TogglePopupCurentLink(string word)
     {
         popupHandler.TogglePopupPanel(word);
     }
 
-    // Clear previous word selection.
+    ///<summary>
+    /// Clear previous word selection and rests vertex data for previously selected word.
+    ///</summary>
     private void ClearTextSelection()
     {
-        CurentLink = string.Empty;
-        popupHandler.TogglePopupPanel(CurentLink);
+        CurrentWord = string.Empty;
+        popupHandler.TogglePopupPanel(CurrentWord);
 
         TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[selectedWord];
         Color32 c;
@@ -141,13 +152,17 @@ public class WordSelector : MonoBehaviour
         selectedWord = -1;
     }
 
+
+    ///<summary>
+    /// Handles setting and updating the text mesh pro text vertex colors for the selected word.
+    ///</summary>
     private void HandleTextSelection(int wordIndex)
     {
         selectedWord = wordIndex;
 
         TMP_WordInfo wInfo = textMeshPro.textInfo.wordInfo[wordIndex];
-        CurentLink = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
-        popupHandler.TogglePopupPanel(CurentLink);
+        CurrentWord = (wInfo.GetWord().Length > 2) ? wInfo.GetWord() : string.Empty;
+        popupHandler.TogglePopupPanel(CurrentWord);
 
         Color32 c = DatabaseManager.ActiveDatabase.ContainsKey(wInfo.GetWord().ToLower()) ? existingSelected : newSelected;
 
